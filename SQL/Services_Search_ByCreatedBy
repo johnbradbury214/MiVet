@@ -1,0 +1,48 @@
+ALTER PROC [dbo].[Services_Search_ByCreatedBy] @PageIndex int
+											  ,@PageSize int
+								              ,@Query nvarchar(100)
+										
+as
+
+/* ----- Test Code -----
+
+DECLARE @PageIndex int = 0
+	   ,@PageSize int = 5
+	   ,@Query nvarchar(100) = 'test'
+EXECUTE [dbo].[Services_Search_ByCreatedBy] @PageIndex
+											,@PageSize
+											,@Query
+
+*/
+
+BEGIN
+
+DECLARE @offset int = @PageIndex * @PageSize
+
+SELECT s.[Id]
+	  ,st.[Name] as ServiceType
+	  ,s.[Name]
+	  ,s.[Description]
+	  ,s.[Total]
+	  ,s.[ServiceCode]
+	  ,s.[IsActive]
+	  ,s.[DateCreated]
+	  ,s.[DateModified]
+	  ,s.[CreatedBy]
+	  ,u.[FirstName]
+	  ,u.[LastName]
+	  ,s.[ModifiedBy]
+	  ,TotalCount = COUNT(1) OVER()
+			
+FROM [dbo].[Services] as s inner join [dbo].[ServiceTypes] as st
+					  on [s].[ServiceTypeId] = [st].[Id]
+					  inner join [dbo].[Users] as u
+					  on s.CreatedBy = u.Id
+WHERE (u.FirstName LIKE '%' + @Query + '%')
+OR (u.LastName LIKE '%' + @Query + '%')
+ORDER BY s.Id
+
+OFFSET @offset Rows
+Fetch Next @PageSize Rows ONLY
+
+END
