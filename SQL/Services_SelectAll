@@ -1,0 +1,44 @@
+ALTER PROC [dbo].[Services_SelectAll]
+								@PageIndex int
+							   ,@PageSize int								
+								
+as 
+
+/* ----- Test Code -----
+
+DECLARE @pageIndex int = 0
+	   ,@pageSize int = 10
+
+EXECUTE dbo.Services_SelectAll @PageIndex
+						      ,@PageSize
+
+*/
+
+BEGIN 
+
+	DECLARE @offset int = @pageIndex * @pageSize
+
+	SELECT s.[Id]
+		  ,st.[Name] as ServiceType
+		  ,s.[Name]
+		  ,s.[Description]
+		  ,s.[Total]
+		  ,s.[ServiceCode]
+		  ,s.[IsActive]
+		  ,s.[DateCreated]
+		  ,s.[DateModified]
+		  ,s.[CreatedBy]
+		  ,s.[ModifiedBy]
+		  ,TotalCount = COUNT(1) OVER()
+
+	FROM [dbo].[Services] as s inner join [dbo].[ServiceTypes] as st
+	ON s.ServiceTypeId = st.Id
+	inner join [dbo].[Users] as u
+	on u.Id = s.CreatedBy
+
+	ORDER BY s.[Id]
+				
+	OFFSET @offset ROWS
+	FETCH NEXT @pageSize ROWS ONLY
+
+END
