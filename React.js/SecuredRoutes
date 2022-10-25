@@ -1,0 +1,41 @@
+import { lazy } from "react";
+
+const ServicesProvided = lazy(() =>
+  import("../components/servicesprovided/ServicesProvided")
+);
+const AddServiceProvided = lazy(() =>
+  import("../components/servicesprovided/AddServiceProvided")
+);
+
+const componentRoute = [  {
+    path: "/services",
+    name: "Services",
+    exact: true,
+    element: ServicesProvided,
+    roles: ["Vet", "Admin"],
+    isAnonymous: true,
+  },
+  {
+    path: "/services/add",
+    name: "Add Service",
+    exact: true,
+    element: AddServiceProvided,
+    roles: ["Vet", "Admin"],
+    isAnonymous: true,
+  },
+];
+
+const allRoutes = [
+  ...dashboardRoutes,
+  ...test,
+  ...errorRoutes,
+  ...componentRoute,
+  ...vetProfiles,
+  ...appRoutes,
+  ...appointments,
+  ...scheduleRoutes,
+  ...newsfeedRoutes,
+  ...faqForm,
+];
+
+export default allRoutes;
